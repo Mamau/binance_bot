@@ -29,6 +29,13 @@ func NewLeaderBoard(ba *webapi.LeaderBoard, logger log.Logger, tg *telegramClien
 	}
 }
 func (l *LeaderBoard) NotifyAboutBet(lb *entity.LeaderBoard) {
+	if len(lb.Data.OtherPositionRetList) == 0 {
+		if err := l.tg.SendMessage(l.conf.App.TelegramUserID, "чувак закрыл сделку или их нет"); err != nil {
+			l.logger.Err(err).Msg("error while send message")
+		}
+		return
+	}
+
 	for _, v := range lb.Data.OtherPositionRetList {
 		pos := entity.NewPosition(v.Symbol, v.Amount, v.EntryPrice, v.Pnl, v.Leverage)
 
