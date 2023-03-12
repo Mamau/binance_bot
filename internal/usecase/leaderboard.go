@@ -39,10 +39,10 @@ func (l *LeaderBoard) NotifyAboutBet(lb *entity.LeaderBoard) {
 		l.store.Flush()
 		l.store.Set(getKey(pos), true, cache.NoExpiration)
 
-		//if err := l.tg.SendMessage(l.conf.App.TelegramUserID, pos.ToTelegramMessage()); err != nil {
-		//	l.logger.Err(err).Msg("error while send message1")
-		//	continue
-		//}
+		if err := l.tg.SendMessage(l.conf.App.TelegramUserID, pos.ToTelegramMessage()); err != nil {
+			l.logger.Err(err).Msg("error while send message1")
+			continue
+		}
 	}
 }
 func (l *LeaderBoard) GetLeader(ctx context.Context) (*entity.LeaderBoard, error) {
