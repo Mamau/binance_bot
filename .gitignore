@@ -1,0 +1,9 @@
+.env
+.idea
+bin
+.git
+coverage.out
+vendor
+tmp
+tmp2
+.netrc
