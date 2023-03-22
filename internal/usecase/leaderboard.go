@@ -57,6 +57,40 @@ func (l *LeaderBoard) NotifyAboutBet(lb *entity.LeaderBoard) {
 		}
 	}
 }
+func (l *LeaderBoard) GetStatistic(ctx context.Context) entity.Statistic {
+	data := l.binanceApi.GetPositions(ctx, l.conf.App.EncryptedUids)
+	count := len(data)
+	var countLong int
+	var countShort int
+	var minPrice float64
+	var maxPrice float64
+
+	for _, v := range data {
+		if len(v.Data.OtherPositionRetList) == 0 {
+			count--
+			continue
+		}
+
+		for _, bet := range v.Data.OtherPositionRetList {
+			if betType := entity.DetermineBetName(bet.Symbol); betType != entity.BTC {
+				continue
+			}
+			if betType := entity.DetermineBetType(bet.Amount); betType == entity.Short {
+				countShort++
+			} else {
+				countLong++
+			}
+			if bet.EntryPrice < minPrice || minPrice == 0 {
+				minPrice = bet.EntryPrice
+			}
+			if bet.EntryPrice > maxPrice || minPrice == 0 {
+				maxPrice = bet.EntryPrice
+			}
+		}
+	}
+
+	return entity.NewStatistic(count, countShort, countLong, minPrice, maxPrice)
+}
 func (l *LeaderBoard) GetLeader(ctx context.Context) (*entity.LeaderBoard, error) {
 	lb, err := l.binanceApi.GetPosition(ctx)
 	if err != nil {

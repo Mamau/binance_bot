@@ -18,6 +18,12 @@ func newBinanceRoutes(group *gin.RouterGroup, logger log.Logger, board *usecase.
 		board:  board,
 	}
 	group.GET("/leader-position", b.leaderPosition)
+	group.GET("/statistic", b.statistic)
+}
+
+func (b *binanceRoutes) statistic(c *gin.Context) {
+	data := b.board.GetStatistic(c.Request.Context())
+	c.JSON(http.StatusOK, gin.H{"data": data})
 }
 
 func (b *binanceRoutes) leaderPosition(c *gin.Context) {

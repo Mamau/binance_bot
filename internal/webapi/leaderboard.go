@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"sync"
 )
 
 type LeaderBoard struct {
@@ -22,6 +23,42 @@ func NewWebData(log log.Logger, conf *config.Config) *LeaderBoard {
 		log:  log,
 		conf: conf,
 	}
+}
+
+func (l *LeaderBoard) GetPositions(ctx context.Context, encryptedUid []string) []*entity.LeaderBoard {
+	var ops []entity.OtherPosition
+	for _, v := range encryptedUid {
+		ops = append(ops, entity.OtherPosition{
+			EncryptedUid: v,
+			TradeType:    l.conf.App.TradeType,
+		})
+	}
+
+	var result []*entity.LeaderBoard
+	var wg sync.WaitGroup
+	for _, v := range ops {
+		wg.Add(1)
+		go func(op entity.OtherPosition) {
+			defer wg.Done()
+			response, err := l.doRequest(ctx, op)
+			if err != nil {
+				l.log.Err(err).Msg("error while do request in cycle")
+				return
+			}
+
+			defer func() { _ = response.Body.Close() }()
+
+			var lb entity.LeaderBoard
+			if err := json.NewDecoder(response.Body).Decode(&lb); err != nil {
+				l.log.Err(err).Msg("error while decode in cycle")
+				return
+			}
+			result = append(result, &lb)
+		}(v)
+	}
+	wg.Wait()
+
+	return result
 }
 
 func (l *LeaderBoard) GetPosition(ctx context.Context) (*entity.LeaderBoard, error) {

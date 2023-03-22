@@ -12,6 +12,7 @@ import (
 const (
 	HelpCmd    = "/help"
 	GetInfoCmd = "/get_info"
+	GetStatCmd = "/get_statistic"
 )
 
 func (p *Processor) doCmd(text string, userID int, username string, firstName string) error {
@@ -26,9 +27,18 @@ func (p *Processor) doCmd(text string, userID int, username string, firstName st
 		return p.sendHelp(userID)
 	case GetInfoCmd:
 		return p.getInfo(userID)
+	case GetStatCmd:
+		return p.getStatistic(userID)
 	default:
 		return p.tg.SendMessage(userID, msgUnknownCommand)
 	}
+}
+func (p *Processor) getStatistic(userID int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	data := p.leaderBoardService.GetStatistic(ctx)
+
+	return p.tg.SendMessage(userID, data.ToTelegramMessage())
 }
 func (p *Processor) getInfo(userID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)

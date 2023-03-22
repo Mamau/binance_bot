@@ -38,8 +38,8 @@ func NewPosition(
 	leverage int,
 ) Position {
 	return Position{
-		Symbol:     determineBetName(symbol),
-		BetType:    determineBetType(amount),
+		Symbol:     DetermineBetName(symbol),
+		BetType:    DetermineBetType(amount),
 		Amount:     amount,
 		EntryPrice: entryPrice,
 		Pnl:        pnl,
@@ -59,7 +59,7 @@ func (p Position) ToTelegramMessage() string {
 
 	return buffer.String()
 }
-func determineBetName(name string) BetName {
+func DetermineBetName(name string) BetName {
 	switch name {
 	case string(BTC):
 		return BTC
@@ -71,7 +71,7 @@ func determineBetName(name string) BetName {
 		return Empty
 	}
 }
-func determineBetType(amount float64) BetType {
+func DetermineBetType(amount float64) BetType {
 	if amount == 0 {
 		return Undefined
 	}
