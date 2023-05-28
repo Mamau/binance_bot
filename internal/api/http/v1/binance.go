@@ -24,7 +24,7 @@ func newBinanceRoutes(group *gin.RouterGroup, logger log.Logger, board *usecase.
 
 func (b *binanceRoutes) statistic(c *gin.Context) {
 	data := b.board.GetStatistic(c.Request.Context())
-	c.JSON(http.StatusOK, gin.H{"data": data})
+	c.JSON(http.StatusOK, gin.H{"data": data.Data})
 }
 
 func (b *binanceRoutes) leaderPosition(c *gin.Context) {
