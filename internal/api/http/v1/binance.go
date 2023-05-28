@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"binance_bot/internal/api/http/v1/request"
 	"binance_bot/internal/usecase"
 	"binance_bot/pkg/log"
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,13 @@ func (b *binanceRoutes) statistic(c *gin.Context) {
 }
 
 func (b *binanceRoutes) leaderPosition(c *gin.Context) {
-	data, err := b.board.GetLeader(c.Request.Context())
+	var r request.LeaderPosition
+	if err := c.ShouldBindQuery(&r); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	data, err := b.board.GetLeaderByRequest(c.Request.Context(), r)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return

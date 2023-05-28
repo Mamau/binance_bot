@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"binance_bot/internal/api/http/v1/request"
 	telegramClient "binance_bot/internal/clients/telegram"
 	"binance_bot/internal/config"
 	"binance_bot/internal/entity"
@@ -91,8 +92,26 @@ func (l *LeaderBoard) GetStatistic(ctx context.Context) entity.Statistic {
 
 	return entity.NewStatistic(count, countShort, countLong, minPrice, maxPrice)
 }
+func (l *LeaderBoard) GetLeaderByRequest(ctx context.Context, r request.LeaderPosition) (*entity.LeaderBoard, error) {
+	encrUid := l.conf.App.EncryptedUid
+	trType := l.conf.App.TradeType
+	if r.EncryptedUid != "" {
+		encrUid = r.EncryptedUid
+	}
+	if r.TradeType != "" {
+		trType = r.TradeType
+	}
+
+	lb, err := l.binanceApi.GetPosition(ctx, encrUid, trType)
+	if err != nil {
+		l.logger.Err(err).Msg("error while get leader by request from binance")
+		return nil, err
+	}
+
+	return lb, nil
+}
 func (l *LeaderBoard) GetLeader(ctx context.Context) (*entity.LeaderBoard, error) {
-	lb, err := l.binanceApi.GetPosition(ctx)
+	lb, err := l.binanceApi.GetPosition(ctx, l.conf.App.EncryptedUid, l.conf.App.TradeType)
 	if err != nil {
 		l.logger.Err(err).Msg("error while get position from binance")
 		return nil, err

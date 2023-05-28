@@ -61,10 +61,10 @@ func (l *LeaderBoard) GetPositions(ctx context.Context, encryptedUid []string) [
 	return result
 }
 
-func (l *LeaderBoard) GetPosition(ctx context.Context) (*entity.LeaderBoard, error) {
+func (l *LeaderBoard) GetPosition(ctx context.Context, encryptedUid, tradeType string) (*entity.LeaderBoard, error) {
 	op := entity.OtherPosition{
-		EncryptedUid: l.conf.App.EncryptedUid,
-		TradeType:    l.conf.App.TradeType,
+		EncryptedUid: encryptedUid,
+		TradeType:    tradeType,
 	}
 
 	response, err := l.doRequest(ctx, op)
