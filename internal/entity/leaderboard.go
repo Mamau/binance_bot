@@ -23,3 +23,25 @@ type LeaderBoard struct {
 	} `json:"data"`
 	Success bool `json:"success"`
 }
+
+type LeaderBoardRank struct {
+	Code          string  `json:"code"`
+	Message       *string `json:"message"`
+	MessageDetail *string `json:"messageDetail"`
+	Data          []struct {
+		FutureUid      *string `json:"futureUid"`
+		NickName       string  `json:"nickName"`
+		UserPhotoUrl   string  `json:"userPhotoUrl"`
+		Rank           int     `json:"rank"`
+		Pnl            float64 `json:"pnl"`
+		Roi            float64 `json:"roi"`
+		PositionShared bool    `json:"positionShared"`
+		TwitterUrl     *string `json:"twitterUrl"`
+		EncryptedUid   string  `json:"encryptedUid"`
+		UpdateTime     int64   `json:"updateTime"`
+		FollowerCount  int     `json:"followerCount"`
+		IsTwTrader     bool    `json:"isTwTrader"`
+		OpenId         *string `json:"openId"`
+	} `json:"data"`
+	Success bool `json:"success"`
+}

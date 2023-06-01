@@ -1,9 +1,8 @@
 package serviceprovider
 
 import (
-	nh "net/http"
-
 	"binance_bot/internal/config"
+	nh "net/http"
 
 	"binance_bot/pkg/log"
 	"binance_bot/pkg/transport/http"

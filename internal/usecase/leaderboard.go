@@ -59,7 +59,12 @@ func (l *LeaderBoard) NotifyAboutBet(lb *entity.LeaderBoard) {
 	}
 }
 func (l *LeaderBoard) GetStatistic(ctx context.Context) entity.Statistic {
-	data := l.binanceApi.GetPositions(ctx, l.conf.App.EncryptedUids)
+	var uids []string
+	uids, err := l.GetAllLeadersUids(ctx)
+	if err != nil {
+		uids = l.conf.App.EncryptedUids
+	}
+	data := l.binanceApi.GetPositions(ctx, uids)
 
 	shortStat := entity.NewDetailStatistic(entity.Short, 0, 0, 0)
 	longStat := entity.NewDetailStatistic(entity.Long, 0, 0, 0)
@@ -75,7 +80,6 @@ func (l *LeaderBoard) GetStatistic(ctx context.Context) entity.Statistic {
 				continue
 			}
 			markPrice = bet.MarkPrice
-			fmt.Printf("%+v\n", bet)
 			if betType := entity.DetermineBetType(bet.Amount); betType == entity.Short {
 				shortStat.Count++
 				if bet.EntryPrice < shortStat.MinEntryPrice || shortStat.MinEntryPrice == 0 {
@@ -116,6 +120,19 @@ func (l *LeaderBoard) GetLeaderByRequest(ctx context.Context, r request.LeaderPo
 	}
 
 	return lb, nil
+}
+func (l *LeaderBoard) GetAllLeadersUids(ctx context.Context) ([]string, error) {
+	data, err := l.binanceApi.GetAllLeaders(ctx)
+	if err != nil {
+		l.logger.Err(err).Msg("error while get position from binance")
+		return nil, err
+	}
+	var uids []string
+	for i := range data.Data {
+		uids = append(uids, data.Data[i].EncryptedUid)
+	}
+
+	return uids, nil
 }
 func (l *LeaderBoard) GetLeader(ctx context.Context) (*entity.LeaderBoard, error) {
 	lb, err := l.binanceApi.GetPosition(ctx, l.conf.App.EncryptedUid, l.conf.App.TradeType)

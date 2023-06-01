@@ -36,11 +36,12 @@ func (l *LeaderBoard) GetPositions(ctx context.Context, encryptedUid []string) [
 
 	var result []*entity.LeaderBoard
 	var wg sync.WaitGroup
+	path := "bapi/futures/v1/public/future/leaderboard/getOtherPosition"
 	for _, v := range ops {
 		wg.Add(1)
 		go func(op entity.OtherPosition) {
 			defer wg.Done()
-			response, err := l.doRequest(ctx, op)
+			response, err := l.doRequest(ctx, op, path)
 			if err != nil {
 				l.log.Err(err).Msg("error while do request in cycle")
 				return
@@ -66,8 +67,8 @@ func (l *LeaderBoard) GetPosition(ctx context.Context, encryptedUid, tradeType s
 		EncryptedUid: encryptedUid,
 		TradeType:    tradeType,
 	}
-
-	response, err := l.doRequest(ctx, op)
+	path := "bapi/futures/v1/public/future/leaderboard/getOtherPosition"
+	response, err := l.doRequest(ctx, op, path)
 	if err != nil {
 		return nil, err
 	}
@@ -82,11 +83,35 @@ func (l *LeaderBoard) GetPosition(ctx context.Context, encryptedUid, tradeType s
 	return &lb, nil
 }
 
-func (l *LeaderBoard) doRequest(ctx context.Context, op entity.OtherPosition) (*http.Response, error) {
+func (l *LeaderBoard) GetAllLeaders(ctx context.Context) (entity.LeaderBoardRank, error) {
+	var leaderBoardRank entity.LeaderBoardRank
+	lbp := entity.LeaderBoardPayload{
+		IsShared:       true,
+		IsTrader:       false,
+		PeriodType:     "WEEKLY",
+		StatisticsType: "ROI",
+		TradeType:      "PERPETUAL",
+	}
+	path := "bapi/futures/v3/public/future/leaderboard/getLeaderboardRank"
+	response, err := l.doRequest(ctx, lbp, path)
+	if err != nil {
+		return leaderBoardRank, err
+	}
+
+	defer func() { _ = response.Body.Close() }()
+
+	if err := json.NewDecoder(response.Body).Decode(&leaderBoardRank); err != nil {
+		return leaderBoardRank, err
+	}
+
+	return leaderBoardRank, nil
+}
+
+func (l *LeaderBoard) doRequest(ctx context.Context, op any, path string) (*http.Response, error) {
 	u := url.URL{
 		Scheme: "https",
 		Host:   "www.binance.com",
-		Path:   "bapi/futures/v1/public/future/leaderboard/getOtherPosition",
+		Path:   path,
 	}
 
 	result, err := json.Marshal(op)
