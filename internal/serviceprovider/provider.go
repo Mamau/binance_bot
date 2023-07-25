@@ -14,9 +14,10 @@ import (
 )
 
 var ProviderSet = wire.NewSet(
-	//wire.Bind(new(userinfo.UserService), new(*userinfo.Service)), userinfo.NewService,
-	//wire.Bind(new(v1.FriendService), new(*friends.Service)), friends.NewService,
 	NewBaseRouter,
+	usecase.NewWhaleHome,
+	webapi.NewBlockchain,
+	usecase.NewWhaleWatcher,
 	application.GetBuildVersion,
 	config.GetConfig,
 	config.GetAppConfig,

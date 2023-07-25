@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"binance_bot/internal/entity"
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/rs/zerolog/log"
@@ -10,9 +11,10 @@ import (
 )
 
 const (
-	HelpCmd    = "/help"
-	GetInfoCmd = "/get_info"
-	GetStatCmd = "/get_statistic"
+	HelpCmd     = "/help"
+	GetInfoCmd  = "/get_info"
+	GetWhaleCmd = "/get_whale"
+	GetStatCmd  = "/get_statistic"
 )
 
 func (p *Processor) doCmd(text string, userID int, username string, firstName string) error {
@@ -29,10 +31,31 @@ func (p *Processor) doCmd(text string, userID int, username string, firstName st
 		return p.getInfo(userID)
 	case GetStatCmd:
 		return p.getStatistic(userID)
+	case GetWhaleCmd:
+		return p.getWhalesTransactions(userID)
 	default:
 		return p.tg.SendMessage(userID, msgUnknownCommand)
 	}
 }
+func (p *Processor) getWhalesTransactions(userID int) error {
+	data, err := p.wh.GetWhaleActionFromCache()
+	if err != nil {
+		return err
+	}
+
+	var buffer bytes.Buffer
+	for i := range data {
+		buffer.WriteString(fmt.Sprintf("<b>Имя</b>: %s\n", data[i].WhaleName))
+		buffer.WriteString(fmt.Sprintf("<b>Позиция</b>: %s\n", data[i].WhalePosition))
+		buffer.WriteString(fmt.Sprintf("<b>Тип</b>: %s\n", data[i].Type))
+		buffer.WriteString(fmt.Sprintf("<b>ETH</b>: %f\n", data[i].ValueETH))
+		buffer.WriteString(fmt.Sprintf("<b>Дата</b>: %s\n", data[i].Date.Format("02.01.2006 15:04:05")))
+		buffer.WriteString("\n")
+	}
+
+	return p.tg.SendMessage(userID, buffer.String())
+}
+
 func (p *Processor) getStatistic(userID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()

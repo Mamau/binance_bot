@@ -16,7 +16,7 @@ func createApp(
 	hs *http.Server,
 	c *config.Config,
 	logger log.Logger,
-	watcher *usecase.LeaderBoardWatcher,
+	watcher *usecase.WhaleWatcher,
 	consumer *eventconsumer.Consumer,
 ) *application.App {
 	return application.New(

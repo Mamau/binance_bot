@@ -36,10 +36,12 @@ func newApp() (*application.App, func(), error) {
 	usecaseLeaderBoard := usecase.NewLeaderBoard(leaderBoard, logger, client, configConfig)
 	handler := v1.NewRouter(engine, logger, usecaseLeaderBoard)
 	server := serviceprovider.NewHttp(handler, configConfig, logger)
-	leaderBoardWatcher := usecase.NewLeaderBoardWatcher(usecaseLeaderBoard, logger)
-	processor := telegram2.NewProcessor(client, usecaseLeaderBoard)
+	blockchain := webapi.NewBlockchain(logger, configConfig)
+	whaleHome := usecase.NewWhaleHome(logger, blockchain)
+	whaleWatcher := usecase.NewWhaleWatcher(whaleHome, logger, client, configConfig)
+	processor := telegram2.NewProcessor(client, usecaseLeaderBoard, whaleHome)
 	consumer := eventconsumer.NewConsumer(processor, configConfig, logger)
-	app := createApp(server, configConfig, logger, leaderBoardWatcher, consumer)
+	app := createApp(server, configConfig, logger, whaleWatcher, consumer)
 	return app, func() {
 	}, nil
 }

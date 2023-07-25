@@ -11,6 +11,7 @@ import (
 type Processor struct {
 	tg                 *telegramClient.Client
 	leaderBoardService *usecase.LeaderBoard
+	wh                 *usecase.WhaleHome
 	offset             int
 }
 type Meta struct {
@@ -24,11 +25,12 @@ var (
 	ErrUnknownMetaType  = errors.New("unknown meta type")
 )
 
-func NewProcessor(client *telegramClient.Client, lbs *usecase.LeaderBoard) *Processor {
+func NewProcessor(client *telegramClient.Client, lbs *usecase.LeaderBoard, wh *usecase.WhaleHome) *Processor {
 	return &Processor{
 		tg:                 client,
 		offset:             0,
 		leaderBoardService: lbs,
+		wh:                 wh,
 	}
 }
 
