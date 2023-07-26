@@ -36,7 +36,7 @@ func NewWhaleWatcher(s *WhaleHome, l log.Logger, tg *telegramClient.Client, conf
 
 func (ww *WhaleWatcher) Run() {
 	defer close(ww.done)
-	ticker := time.NewTicker(time.Second * 11)
+	ticker := time.NewTicker(time.Second * 31)
 
 	done := make(chan bool)
 
