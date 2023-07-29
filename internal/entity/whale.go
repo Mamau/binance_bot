@@ -24,6 +24,7 @@ type WhaleAction struct {
 	WhalePosition string    `json:"whalePosition"`
 	Type          string    `json:"type"`
 	ValueETH      float64   `json:"valueETH"`
+	Balance       float64   `json:"balance"`
 	Hash          string    `json:"hash"`
 	Date          time.Time `json:"date"`
 }
@@ -34,12 +35,16 @@ func (a ByDate) Len() int           { return len(a) }
 func (a ByDate) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByDate) Less(i, j int) bool { return a[i].Date.Before(a[j].Date) }
 
-func NewWhaleAction(whaleName, wp string, transactionType TransactionType, value *big.Int, date time.Time, hash string) WhaleAction {
+func NewWhaleAction(whaleName, wp string, transactionType TransactionType, value *big.Int, date time.Time, hash string, balance *big.Int) WhaleAction {
 	weiPerEth := big.NewInt(DividerETH)
-	ethAmount := new(big.Float).SetInt(value)     // Конвертируем в тип big.Float для точности
 	ethPerWei := new(big.Float).SetInt(weiPerEth) // Конвертируем в тип big.Float для точности
+	ethAmount := new(big.Float).SetInt(value)     // Конвертируем в тип big.Float для точности
 	ethAmount.Quo(ethAmount, ethPerWei)           // Выполняем деление, чтобы получить значение в ETH
 	ethAmountFloat, _ := ethAmount.Float64()      // Конвертируем big.Float в float64
+
+	balanceAmount := new(big.Float).SetInt(balance) // Конвертируем в тип big.Float для точности
+	ethAmount.Quo(balanceAmount, ethPerWei)         // Выполняем деление, чтобы получить значение в ETH
+	balanceAmountFloat, _ := ethAmount.Float64()    // Конвертируем big.Float в float64
 
 	return WhaleAction{
 		WhaleName:     whaleName,
@@ -48,6 +53,7 @@ func NewWhaleAction(whaleName, wp string, transactionType TransactionType, value
 		ValueETH:      ethAmountFloat,
 		Date:          date,
 		Hash:          hash,
+		Balance:       balanceAmountFloat,
 	}
 }
 

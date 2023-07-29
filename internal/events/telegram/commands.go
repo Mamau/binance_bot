@@ -50,6 +50,7 @@ func (p *Processor) getWhalesTransactions(userID int) error {
 		buffer.WriteString(fmt.Sprintf("<b>Тип</b>: %s\n", data[i].Type))
 		buffer.WriteString(fmt.Sprintf("<b>ETH</b>: %f\n", data[i].ValueETH))
 		buffer.WriteString(fmt.Sprintf("<b>Дата</b>: %s\n", data[i].Date.Format("02.01.2006 15:04:05")))
+		buffer.WriteString(fmt.Sprintf("<b>Общий баланс</b>: %f ETH\n", data[i].Balance))
 		buffer.WriteString("\n")
 	}
 

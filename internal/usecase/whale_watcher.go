@@ -82,6 +82,7 @@ func (ww *WhaleWatcher) saveOrUpdateCache(data entity.WhaleAction) {
 			buffer.WriteString(fmt.Sprintf("<b>Тип</b>: %s\n", data.Type))
 			buffer.WriteString(fmt.Sprintf("<b>ETH</b>: %f\n", data.ValueETH))
 			buffer.WriteString(fmt.Sprintf("<b>Дата</b>: %s\n", data.Date.Format("02.01.2006 15:04:05")))
+			buffer.WriteString(fmt.Sprintf("<b>Общий баланс</b>: %f ETH\n", data.Balance))
 			buffer.WriteString("\n")
 
 			if err := ww.tg.SendMessage(ww.conf.App.TelegramUserID, buffer.String()); err != nil {

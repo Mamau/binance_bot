@@ -54,6 +54,12 @@ func (wh *WhaleHome) GetWhaleAction(ctx context.Context) ([]entity.WhaleAction, 
 	}
 	for i := range data {
 		whale := entity.FindWhale(data[i].Hash)
+		balance := new(big.Int)
+		balance, ok := balance.SetString(data[i].Balance, 10)
+		if !ok {
+			return nil, fmt.Errorf("error while convert balance string to big.Int")
+		}
+
 		for j := range data[i].AccountTransactions {
 			transactionType := entity.TransactionType(data[i].AccountTransactions[j].Type)
 			if data[i].AccountTransactions[j].Value == "0" {
@@ -75,7 +81,7 @@ func (wh *WhaleHome) GetWhaleAction(ctx context.Context) ([]entity.WhaleAction, 
 				break
 			}
 
-			item := entity.NewWhaleAction(whale.Name, whale.Position, transactionType, num, tm, data[i].Hash)
+			item := entity.NewWhaleAction(whale.Name, whale.Position, transactionType, num, tm, data[i].Hash, balance)
 			wa = append(wa, item)
 			break
 		}
