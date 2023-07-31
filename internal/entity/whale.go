@@ -6,7 +6,11 @@ import (
 )
 
 type TransactionType string
+type TransactionState string
 
+const (
+	Pending TransactionState = "PENDING"
+)
 const (
 	External TransactionType = "EXTERNAL"
 	Internal TransactionType = "INTERNAL"

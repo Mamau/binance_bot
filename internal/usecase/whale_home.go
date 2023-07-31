@@ -83,14 +83,34 @@ func (wh *WhaleHome) GetWhaleAction(ctx context.Context) ([]entity.WhaleAction, 
 
 			item := entity.NewWhaleAction(whale.Name, whale.Position, transactionType, num, tm, data[i].Hash, balance)
 			wa = append(wa, item)
+			if data[i].AccountTransactions[j].State == string(entity.Pending) {
+				continue
+			}
 			break
 		}
 	}
 	sort.Sort(entity.ByDate(wa))
 
-	return wa, nil
+	return groupWhales(wa), nil
 }
+func groupWhales(data []entity.WhaleAction) []entity.WhaleAction {
+	cacheData := make(map[string]entity.WhaleAction)
+	for _, action := range data {
+		if item, ok := cacheData[action.Hash]; ok {
+			item.ValueETH += action.ValueETH
+			cacheData[action.Hash] = item
+			continue
+		}
+		cacheData[action.Hash] = action
+	}
 
+	result := make([]entity.WhaleAction, 0, len(cacheData))
+	for _, v := range cacheData {
+		result = append(result, v)
+	}
+
+	return result
+}
 func (wh *WhaleHome) GetWhaleTransactions(ctx context.Context) ([]entity.AccountTransaction, error) {
 	var at = make([]entity.AccountTransaction, 0, len(entity.WhaleList))
 
