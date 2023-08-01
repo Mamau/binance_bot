@@ -96,12 +96,13 @@ func (wh *WhaleHome) GetWhaleAction(ctx context.Context) ([]entity.WhaleAction, 
 func groupWhales(data []entity.WhaleAction) []entity.WhaleAction {
 	cacheData := make(map[string]entity.WhaleAction)
 	for _, action := range data {
-		if item, ok := cacheData[action.Hash]; ok {
+		key := fmt.Sprintf("%s_%s", action.Hash, action.Type)
+		if item, ok := cacheData[key]; ok {
 			item.ValueETH += action.ValueETH
-			cacheData[action.Hash] = item
+			cacheData[key] = item
 			continue
 		}
-		cacheData[action.Hash] = action
+		cacheData[key] = action
 	}
 
 	result := make([]entity.WhaleAction, 0, len(cacheData))

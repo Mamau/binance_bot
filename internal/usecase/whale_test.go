@@ -13,7 +13,7 @@ func TestGroupWhales(t *testing.T) {
 		Expected []entity.WhaleAction
 	}{
 		{
-			Name: "проверка успешногй группировки",
+			Name: "проверка успешной группировки",
 			Expected: []entity.WhaleAction{
 				{
 					ValueETH: 3,
@@ -40,6 +40,58 @@ func TestGroupWhales(t *testing.T) {
 				{
 					ValueETH: 1,
 					Hash:     "whale2",
+				},
+			},
+		},
+		{
+			Name: "проверка успешной группировки по типам",
+			Expected: []entity.WhaleAction{
+				{
+					ValueETH: 3,
+					Hash:     "whale1",
+					Type:     string(entity.External),
+				},
+				{
+					ValueETH: 4,
+					Hash:     "whale1",
+					Type:     string(entity.Internal),
+				},
+				{
+					ValueETH: 1,
+					Hash:     "whale2",
+					Type:     string(entity.External),
+				},
+			},
+			Data: []entity.WhaleAction{
+				{
+					ValueETH: 1,
+					Hash:     "whale1",
+					Type:     string(entity.External),
+				},
+				{
+					ValueETH: 2,
+					Hash:     "whale1",
+					Type:     string(entity.Internal),
+				},
+				{
+					ValueETH: 1,
+					Hash:     "whale1",
+					Type:     string(entity.External),
+				},
+				{
+					ValueETH: 2,
+					Hash:     "whale1",
+					Type:     string(entity.Internal),
+				},
+				{
+					ValueETH: 1,
+					Hash:     "whale1",
+					Type:     string(entity.External),
+				},
+				{
+					ValueETH: 1,
+					Hash:     "whale2",
+					Type:     string(entity.External),
 				},
 			},
 		},
