@@ -5,7 +5,7 @@ type App struct {
 	Name           string   `envconfig:"APP_NAME" default:"binance_bot"`
 	Environment    string   `envconfig:"APP_ENV" default:"prod"`
 	Host           string   `envconfig:"APP_HOST" default:"localhost"`
-	Port           string   `envconfig:"APP_PORT" default:"8081"`
+	Port           string   `envconfig:"APP_PORT" default:"8085"`
 	LogLevel       string   `envconfig:"APP_LOG_LEVEL" default:"info"`
 	PrettyLogs     bool     `envconfig:"APP_LOG_PRETTY" default:"false"`
 	SwaggerFolder  string   `envconfig:"SWAGGER_FOLDER" default:"swagger"`
